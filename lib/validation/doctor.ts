@@ -1,0 +1,2 @@
+import { required, digits, textValue, boolValue, validEmail } from "./common";
+export function validateDoctor(input: Record<string, unknown>) { const email = textValue(input.email); return { name: required(input.name, "Nome"), crm: required(input.crm, "CRM").toUpperCase(), specialty: required(input.specialty, "Especialidade"), phone: digits(input.phone), email: email ? validEmail(email) : "", userId: textValue(input.userId) || null, active: boolValue(input.active) }; }

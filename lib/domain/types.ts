@@ -1,0 +1,11 @@
+export type Role = "admin" | "doctor" | "reception";
+export type ThemePreference = "light" | "dark" | "system";
+export type Actor = { id: string; authUserId: string | null; emailVerifiedAt: string | null; name: string; email: string; username: string | null; passwordConfigured: boolean; mustChangePassword: boolean; authenticationMethod?: "password" | "legacy"; role: Role; active: boolean; doctorId: string | null; phone: string; avatarKey: string | null; theme: ThemePreference; notifyAppointments: boolean; notifySystem: boolean; lastSeenAt: string | null };
+export type Permission = "dashboard.read" | "patients.read" | "patients.write" | "patients.manageStatus" | "clinical.read" | "clinical.write" | "doctors.read" | "doctors.manage" | "agenda.read" | "agenda.write" | "users.manage" | "audit.read";
+export type MedicationInput = { medication: string; dosage: string; administrationRoute?: string; frequency: string; duration: string; instructions?: string };
+export type ExamInput = { examName: string; category?: string; priority?: string; notes?: string };
+export type PresentedExamInput = { examName: string; performedAt?: string; laboratory?: string; resultSummary?: string; medicalNotes?: string };
+export type DiagnosisType = "hypothesis" | "confirmed" | "preexisting" | "other";
+export type DiagnosisInput = { cidId: string; type: DiagnosisType };
+export type GovernanceStatus = "pending" | "in_progress" | "complete" | "not_applicable";
+export type GovernanceControl = { key: string; title: string; description: string; status: GovernanceStatus; responsible: string; notes: string; evidenceReference: string; reviewedAt: string | null; updatedAt: string };
