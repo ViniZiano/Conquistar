@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent } from "react";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import { usePublicMotion } from "./usePublicMotion";
 
 type IconName =
@@ -483,7 +484,7 @@ export function PublicLanding({ fontClassName = "" }: { fontClassName?: string }
       </header>
 
       <main id="conteudo">
-        <section className="cq-hero" id="inicio" aria-labelledby="hero-title">
+        <AuroraBackground as="section" className="cq-hero" id="inicio" aria-labelledby="hero-title">
           <div className="cq-wrap cq-hero-grid">
             <div className="cq-hero-copy">
               <p className="cq-kicker cq-hero-in" style={stagger(0)}>Cuidado e atenção à saúde</p>
@@ -572,7 +573,7 @@ export function PublicLanding({ fontClassName = "" }: { fontClassName?: string }
               <li><Icon name="check" /><strong>Informações com responsabilidade</strong></li>
             </ul>
           </div>
-        </section>
+        </AuroraBackground>
 
         <div className="cq-ribbon" aria-hidden="true">
           <div className="cq-ribbon-track">

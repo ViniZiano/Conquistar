@@ -199,6 +199,34 @@
 
 .cq-hero-in { opacity: 0; transform: translateY(14px); animation: cq-fade 0.8s var(--ease) forwards; animation-delay: calc(0.3s + var(--i, 0) * 0.09s); }
 
+/* Fundo aurora do hero (components/ui/aurora-background.tsx).
+   Fica atrás de todo o conteúdo (z-index -1 dentro de um stacking context isolado). */
+.cq-aurora-host { position: relative; isolation: isolate; }
+.cq-aurora { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.cq-aurora[data-radial] {
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 85% 0%, #000 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 85% at 85% 0%, #000 25%, transparent 78%);
+}
+.cq-aurora-layer {
+  --stripes: repeating-linear-gradient(100deg, var(--paper) 0%, var(--paper) 6%, transparent 10%, transparent 15%, var(--paper) 19%);
+  --glow: repeating-linear-gradient(100deg, #5fc3bd 10%, #3fb0ad 15%, #b6e3dd 20%, #86d2cb 25%, #4fb9b5 30%);
+  position: absolute;
+  inset: -10px;
+  opacity: 0.85;
+  filter: blur(12px);
+  background-image: var(--stripes), var(--glow);
+  background-size: 300%, 200%;
+  background-position: 50% 50%, 50% 50%;
+}
+.cq-aurora-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--stripes), var(--glow);
+  background-size: 200%, 100%;
+  animation: cq-aurora 60s linear infinite;
+}
+
 .cq-hero-media { display: grid; gap: 20px; }
 .cq-hero-plate { aspect-ratio: 16 / 10; max-height: 460px; overflow: hidden; border-radius: 4px 4px 4px 88px; background: var(--teal-soft); clip-path: inset(0 0 0 100%); transform: perspective(1200px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)); transition: transform 0.25s var(--ease); animation: cq-wipe 1.2s 0.1s var(--ease) forwards; }
 .cq-hero-parallax { height: 112%; margin-top: -6%; transform: translate3d(0, var(--shift, 0px), 0); will-change: transform; }
@@ -669,6 +697,10 @@
 @keyframes cq-fade { to { opacity: 1; transform: translateY(0); } }
 @keyframes cq-wipe { to { clip-path: inset(0 0 0 0); } }
 @keyframes cq-settle { to { transform: scale(1); } }
+@keyframes cq-aurora {
+  from { background-position: 50% 50%, 50% 50%; }
+  to { background-position: 250% 50%, 250% 50%; }
+}
 @keyframes cq-pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes cq-drop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
