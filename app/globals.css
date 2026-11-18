@@ -342,3 +342,511 @@ body { min-width: 320px; }
 .security-banner > i { background: #087f87; }
 .security-banner strong { color: #08717a; }
 .loading-bar::after { background: #13b8b1; }
+
+/* ==========================================================================
+   Sistema de Movimento Fluido do Painel Clínico (Conquistar Workspace)
+   ========================================================================== */
+:root {
+  --cq-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --cq-bounce: cubic-bezier(0.34, 1.42, 0.64, 1);
+}
+
+.tabular-metric {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Transição espacial ao trocar de módulo */
+.workspace-stage {
+  animation: cq-stage-in 0.36s var(--cq-spring) both;
+}
+
+.view-fade {
+  animation: cq-stage-in 0.3s var(--cq-spring) both;
+}
+
+@keyframes cq-stage-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Navegação lateral com micro-elevação e transição suave */
+.sidebar nav button {
+  transition: background-color 0.24s var(--cq-spring), color 0.24s ease, transform 0.18s var(--cq-spring);
+}
+
+.sidebar nav button:hover {
+  transform: translateX(3px);
+}
+
+.sidebar nav button:active {
+  transform: scale(0.98);
+}
+
+/* Cards KPI do Dashboard com entrada em cascata e brilho spotlight */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  animation: cq-card-stagger 0.48s var(--cq-spring) backwards;
+  animation-delay: calc(var(--stagger, 0) * 60ms);
+  transition: transform 0.28s var(--cq-spring), box-shadow 0.28s var(--cq-spring), border-color 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translate3d(0, -3px, 0);
+  border-color: rgba(8, 127, 135, 0.35);
+  box-shadow: 0 14px 28px -12px rgba(7, 81, 90, 0.16);
+}
+
+.stat-card em {
+  transition: transform 0.28s var(--cq-spring);
+}
+
+.stat-card:hover em {
+  transform: translateX(4px);
+}
+
+.spotlight-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    280px circle at var(--spot-x, -120px) var(--spot-y, -120px),
+    rgba(19, 184, 177, 0.12),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.spotlight-surface:hover::before {
+  opacity: 1;
+}
+
+@keyframes cq-card-stagger {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Abas com indicador deslizante compartilhado (FluidSlidingTabs) */
+.fluid-tabs {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid #d5e1db;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  overflow-x: auto;
+}
+
+.fluid-tabs-segmented {
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 9px;
+}
+
+.fluid-tabs-glider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: 8px;
+  background: #087f87;
+  box-shadow: 0 6px 16px rgba(8, 127, 135, 0.22);
+  transition: transform 0.36s var(--cq-bounce), width 0.36s var(--cq-spring), opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.fluid-tabs-segmented .fluid-tabs-glider {
+  top: 3px;
+  bottom: 3px;
+  border-radius: 6px;
+}
+
+.fluid-tab-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  color: #556e66;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: color 0.22s ease;
+}
+
+.fluid-tabs-segmented .fluid-tab-btn {
+  min-height: 26px;
+  padding: 0 10px;
+  font-size: 9px;
+}
+
+.fluid-tab-btn.active {
+  color: #ffffff;
+}
+
+.fluid-tab-count {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(8, 127, 135, 0.12);
+  font-size: 9px;
+}
+
+.fluid-tab-btn.active .fluid-tab-count {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.patient-fluid-tabs {
+  margin: 20px 0 14px;
+}
+
+/* Gavetas Laterais Deslizantes (Slide-Over Drawers) e Modais Elásticos */
+.modal-backdrop {
+  animation: cq-backdrop-in 0.28s var(--cq-spring) both;
+}
+
+.modal-backdrop.is-drawer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding: 0;
+}
+
+.modal {
+  animation: cq-modal-pop 0.34s var(--cq-bounce) both;
+}
+
+.modal.modal-drawer {
+  width: min(640px, 95vw);
+  max-height: 100vh;
+  height: 100vh;
+  border-radius: 20px 0 0 20px;
+  animation: cq-drawer-slide 0.4s var(--cq-spring) both;
+}
+
+.modal.modal-drawer.modal-wide {
+  width: min(860px, 96vw);
+}
+
+.modal > header .icon-button {
+  transition: transform 0.24s var(--cq-bounce), background-color 0.2s ease;
+}
+
+.modal > header .icon-button:hover {
+  transform: rotate(90deg) scale(1.06);
+}
+
+@keyframes cq-backdrop-in {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(5px); }
+}
+
+@keyframes cq-modal-pop {
+  from { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.96); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes cq-drawer-slide {
+  from { opacity: 0.6; transform: translate3d(100%, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Popovers, Linhas de Tabela, Eventos de Agenda e Toast */
+.search-results,
+.notification-popover {
+  transform-origin: top right;
+  animation: cq-popover-in 0.26s var(--cq-bounce) both;
+}
+
+@keyframes cq-popover-in {
+  from { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.96); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+.data-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background-color: rgba(8, 127, 135, 0.035);
+}
+
+.calendar-event {
+  transition: transform 0.22s var(--cq-spring), box-shadow 0.22s ease;
+}
+
+.calendar-event:hover {
+  transform: translate3d(0, -2px, 0);
+  box-shadow: 0 6px 14px -4px rgba(7, 81, 90, 0.22);
+}
+
+.toast {
+  overflow: hidden;
+  animation: cq-toast-in 0.38s var(--cq-bounce) both;
+}
+
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.45);
+  transform-origin: left;
+  animation: cq-toast-timer 4.2s linear forwards;
+}
+
+@keyframes cq-toast-in {
+  from { opacity: 0; transform: translate3d(24px, 12px, 0) scale(0.94); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes cq-toast-timer {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-stage,
+  .view-fade,
+  .stat-card,
+  .modal,
+  .modal-backdrop,
+  .search-results,
+  .notification-popover,
+  .toast {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   Coreografia e microinterações do Painel Clínico (/app) e Acesso (/acesso)
+   ========================================================================== */
+
+@keyframes cqWorkspaceEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cqModalBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cqModalSpring {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cqToastSlide {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes cqPulseRing {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.45;
+  }
+}
+
+/* Tela de acesso (/acesso) */
+.login-brand::after {
+  animation: cqPulseRing 9s ease-in-out infinite;
+}
+
+.login-card {
+  animation: cqWorkspaceEnter 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Barra lateral e navegação */
+.sidebar nav button {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar nav button:hover {
+  transform: translateX(3px);
+}
+
+.sidebar nav button.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+/* Entrada suave das telas e abas clínicas */
+.workspace > * {
+  animation: cqWorkspaceEnter 0.34s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Cartões de KPI do Dashboard com elevação e resposta tátil */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.24s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.24s cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 0.24s ease;
+}
+
+.stat-card:nth-child(1) { animation: cqWorkspaceEnter 0.35s 0.02s both; }
+.stat-card:nth-child(2) { animation: cqWorkspaceEnter 0.35s 0.07s both; }
+.stat-card:nth-child(3) { animation: cqWorkspaceEnter 0.35s 0.12s both; }
+.stat-card:nth-child(4) { animation: cqWorkspaceEnter 0.35s 0.17s both; }
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  border-color: #9ecbc8;
+  box-shadow: 0 16px 34px -18px rgba(7, 81, 90, 0.28);
+}
+
+.stat-card .stat-icon {
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.08);
+}
+
+.stat-card > em {
+  margin-left: auto;
+  font-style: normal;
+  color: #7d9693;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.stat-card:hover > em {
+  color: #087f87;
+  transform: translateX(4px);
+}
+
+/* Ações rápidas e linhas de tabela */
+.quick-actions button {
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.quick-actions button:hover {
+  transform: translateX(3px);
+}
+
+.data-table tbody tr {
+  transition: background-color 0.18s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #f6fbfa;
+}
+
+.row-actions button,
+.table-action,
+.green-button,
+.secondary-button {
+  transition: transform 0.16s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.green-button:hover:not(:disabled),
+.secondary-button:hover:not(:disabled),
+.row-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Prontuário e linha do tempo clínica */
+.timeline > article {
+  transition: border-color 0.24s ease, box-shadow 0.24s ease, transform 0.24s ease;
+}
+
+.timeline > article:hover {
+  border-color: #b4d8d4;
+  box-shadow: 0 12px 28px -20px rgba(7, 81, 90, 0.35);
+}
+
+.clinical-details {
+  animation: cqWorkspaceEnter 0.28s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Agenda clínica */
+.calendar-event {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.calendar-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px -6px rgba(7, 81, 90, 0.35);
+}
+
+/* Modais e notificações toast */
+.modal-backdrop {
+  animation: cqModalBackdropIn 0.2s ease both;
+}
+
+.modal {
+  animation: cqModalSpring 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.toast {
+  animation: cqToastSlide 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-brand::after,
+  .login-card,
+  .workspace > *,
+  .stat-card,
+  .clinical-details,
+  .modal-backdrop,
+  .modal,
+  .toast {
+    animation: none !important;
+  }
+}

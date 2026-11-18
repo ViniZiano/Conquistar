@@ -1,16 +1,9 @@
 import { useEffect, type RefObject } from "react";
 
 /**
- * Movimento da página pública. Tudo é aprimoramento progressivo:
- * sem JavaScript, ou com "reduzir movimento" ligado no sistema, a página
- * aparece completa e parada.
- *
- * Marcadores usados no HTML:
- *  [data-reveal]   bloco que entra quando rola até ele (só os que estão abaixo da dobra)
- *  [data-header]   cabeçalho; ganha .is-scrolled depois de rolar um pouco
- *  [data-parallax] mídia do hero; desloca de leve conforme a rolagem
- *  [data-steps]    lista de etapas; marca com .is-reached os [data-step] já alcançados
- *  [data-nav-link] links do menu; o da seção visível recebe aria-current="location"
+ * Coreografia e movimento da página pública da Conquistar.
+ * Aprimoramento progressivo: sem JS ou com "prefers-reduced-motion: reduce",
+ * todo o conteúdo permanece visível e estático.
  */
 export function initPublicMotion(root: HTMLElement): () => void {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -22,7 +15,7 @@ export function initPublicMotion(root: HTMLElement): () => void {
     delete root.dataset.motion;
   });
 
-  // 1) Entrada dos blocos ao rolar. Quem já está visível na carga nunca é escondido (sem "piscar").
+  // 1) Revelação escalonada ao rolar (apenas elementos abaixo da dobra inicial)
   if (motion && "IntersectionObserver" in window) {
     const limit = window.innerHeight * 0.92;
     const pending = Array.from(root.querySelectorAll<HTMLElement>("[data-reveal]")).filter(
@@ -38,7 +31,7 @@ export function initPublicMotion(root: HTMLElement): () => void {
           reveal.unobserve(entry.target);
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.1 },
+      { rootMargin: "0px 0px -7% 0px", threshold: 0.08 },
     );
     pending.forEach((el) => reveal.observe(el));
     cleanups.push(() => {
@@ -47,7 +40,7 @@ export function initPublicMotion(root: HTMLElement): () => void {
     });
   }
 
-  // 2) Menu: destaca a seção que está na tela.
+  // 2) Scrollspy da navegação principal
   const links = Array.from(root.querySelectorAll<HTMLAnchorElement>("[data-nav-link]"));
   const byId = new Map<string, HTMLAnchorElement>();
   for (const link of links) {
@@ -66,7 +59,7 @@ export function initPublicMotion(root: HTMLElement): () => void {
           byId.get(entry.target.id)?.setAttribute("aria-current", "location");
         }
       },
-      { rootMargin: "-40% 0px -55% 0px" },
+      { rootMargin: "-38% 0px -55% 0px" },
     );
     sections.forEach((section) => spy.observe(section));
     cleanups.push(() => {
@@ -75,8 +68,12 @@ export function initPublicMotion(root: HTMLElement): () => void {
     });
   }
 
-  // 3) Efeitos ligados à rolagem: cabeçalho, deslocamento do hero e progresso das etapas.
+  // 3) Efeitos contínuos ligados à rolagem:
+  //    - Cabeçalho elevado + barra de progresso editorial
+  //    - Parallax suave da fotografia do hero
+  //    - Trilho contínuo das etapas de preparo
   const header = root.querySelector<HTMLElement>("[data-header]");
+  const progressBar = root.querySelector<HTMLElement>("[data-scroll-progress]");
   const parallax = root.querySelector<HTMLElement>("[data-parallax]");
   const steps = root.querySelector<HTMLElement>("[data-steps]");
   const stepItems = steps ? Array.from(steps.querySelectorAll<HTMLElement>("[data-step]")) : [];
@@ -85,21 +82,29 @@ export function initPublicMotion(root: HTMLElement): () => void {
   const update = () => {
     frame = 0;
     const y = window.scrollY;
-    header?.classList.toggle("is-scrolled", y > 8);
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const ratio = docHeight > 0 ? Math.min(1, Math.max(0, y / docHeight)) : 0;
 
-    if (motion && parallax && y < window.innerHeight) {
-      parallax.style.setProperty("--shift", `${(y * 0.07).toFixed(1)}px`);
+    header?.classList.toggle("is-scrolled", y > 10);
+    if (progressBar) {
+      progressBar.style.transform = `scaleX(${ratio.toFixed(4)})`;
+    }
+
+    if (motion && parallax && y < window.innerHeight * 1.15) {
+      parallax.style.setProperty("--shift", `${(y * 0.08).toFixed(1)}px`);
     }
 
     if (motion && steps) {
       const rect = steps.getBoundingClientRect();
-      const raw = (window.innerHeight * 0.62 - rect.top) / Math.max(rect.height, 1);
+      const raw = (window.innerHeight * 0.65 - rect.top) / Math.max(rect.height, 1);
       const progress = Math.min(1, Math.max(0, raw));
+      steps.style.setProperty("--journey-progress", progress.toFixed(3));
       stepItems.forEach((item, index) => {
-        item.classList.toggle("is-reached", progress >= (index + 0.4) / stepItems.length);
+        item.classList.toggle("is-reached", progress >= (index + 0.35) / stepItems.length);
       });
     }
   };
+
   const schedule = () => {
     if (!frame) frame = window.requestAnimationFrame(update);
   };
@@ -112,7 +117,9 @@ export function initPublicMotion(root: HTMLElement): () => void {
     window.removeEventListener("resize", schedule);
     if (frame) window.cancelAnimationFrame(frame);
     header?.classList.remove("is-scrolled");
+    progressBar?.style.removeProperty("transform");
     parallax?.style.removeProperty("--shift");
+    steps?.style.removeProperty("--journey-progress");
     stepItems.forEach((item) => item.classList.remove("is-reached"));
   });
 
