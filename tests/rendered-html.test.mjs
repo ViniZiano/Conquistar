@@ -20,10 +20,17 @@ test("renderiza o site institucional da Conquistar sem conteúdo do starter", as
   const html = await response.text();
   assert.match(html, /Conquistar/);
   assert.match(html, /Com trabalho se conquista/);
-  assert.match(html, /Sua saúde merece/);
-  assert.match(html, /Nosso atendimento/i);
+  assert.match(html, /Seu cuidado/);
+  assert.match(html, /merece/);
+  assert.match(html, /por inteiro\./);
+  assert.match(html, /Informação e cuidado em/);
   assert.match(html, /Solicite informações/);
+  assert.match(html, /Enviar solicitação/);
+  assert.match(html, /Dúvidas frequentes/);
   assert.match(html, /Área da equipe/);
+  for (const id of ["inicio", "servicos", "sobre", "orientacoes", "duvidas", "contato"]) {
+    assert.match(html, new RegExp(`id="${id}"`), `seção #${id} ausente`);
+  }
   assert.match(html, /favicon\.svg/);
   assert.match(html, /manifest\.webmanifest/);
   const visibleMarkup = html.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "");
